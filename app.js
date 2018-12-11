@@ -1,4 +1,6 @@
 var express = require("express");
+var mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost/auth_demo_app", { useNewUrlParser: true });
 
 var app = express();
 app.set('view engine', 'ejs');
