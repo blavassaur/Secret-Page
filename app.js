@@ -9,6 +9,7 @@ var express     = require("express"),
 mongoose.connect("mongodb://localhost/auth_demo_app", { useNewUrlParser: true });
 
 var app = express();
+app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(require("express-session")({
@@ -17,7 +18,7 @@ app.use(require("express-session")({
     saveUninitialized: false
 }));
 
-app.set('view engine', 'ejs');
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -34,7 +35,7 @@ app.get("/", function(req, res){
     res.render("home");
 })
 
-app.get("/secret", function(req, res){
+app.get("/secret", isLoggedIn, function(req, res){
     res.render("secret");
 })
 
@@ -68,7 +69,17 @@ app.post("/login", passport.authenticate("local", {
 });
 
 //Log out
+app.get("/logout", function(req, res){
+    req.logout();
+    res.redirect("/");
+})
 
+function isLoggedIn(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect("/login");
+}
 
 app.listen(3000, function(req, res){
     console.log("server started")
